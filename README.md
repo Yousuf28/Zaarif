@@ -2,7 +2,8 @@
 ![Zaarif](zaarif_profile.png)
 
 
-Hi, My name is Zaarif Ahnaf Ali. I am 6 years old. I go to Thomas G. Pullen School.  
+Hi, My name is Zaarif Ahnaf Ali. I am 7 years old. I go to Sugarloaf Elementary School.
+I am in 2nd grade.
 
 [Class Activity](class_activity.md)
 
