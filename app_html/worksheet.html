@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Practice Worksheet Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        select {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:hover {
+            border-color: #667eea;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-generate {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-generate:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-copy {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-download {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+        }
+
+        .worksheet-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #worksheet {
+            background: white;
+            padding: 40px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .worksheet-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px 40px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .problem {
+            min-width: 200px;
+        }
+
+        .problem-row {
+            text-align: right;
+            padding: 5px 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .operator {
+            text-align: left;
+            padding-left: 10px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .line {
+            border-top: 2px solid #333;
+            margin: 5px 0;
+        }
+
+        .worksheet-title {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .worksheet-info {
+            text-align: center;
+            font-size: 1em;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            .controls, .button-group {
+                display: none;
+            }
+            #worksheet {
+                border: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Math Practice Worksheet Generator</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="digits">Number of Digits:</label>
+                <select id="digits">
+                    <option value="1">1 Digit</option>
+                    <option value="2">2 Digits</option>
+                    <option value="3">3 Digits</option>
+                    <option value="4">4 Digits</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="operation">Operation:</label>
+                <select id="operation">
+                    <option value="add">Addition (+)</option>
+                    <option value="subtract">Subtraction (-)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-generate" onclick="generateWorksheet()">Generate Worksheet</button>
+            <button class="btn-copy" onclick="copyWorksheet()" id="copyBtn" disabled>Copy to Clipboard</button>
+            <button class="btn-download" onclick="downloadPNG()" id="downloadBtn" disabled>Download as PNG</button>
+        </div>
+
+        <div class="worksheet-container">
+            <div id="worksheet"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function getRandomNumber(digits) {
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateWorksheet() {
+            const digits = parseInt(document.getElementById('digits').value);
+            const operation = document.getElementById('operation').value;
+            const worksheet = document.getElementById('worksheet');
+            
+            const operationSymbol = operation === 'add' ? '+' : '−';
+            const operationName = operation === 'add' ? 'Addition' : 'Subtraction';
+            
+            let html = `
+                <div class="worksheet-title">Math Practice Worksheet</div>
+                <div class="worksheet-info">${operationName} - ${digits} Digit Numbers</div>
+                <div class="worksheet-grid">
+            `;
+            
+            for (let i = 0; i < 16; i++) {
+                let num1 = getRandomNumber(digits);
+                let num2 = getRandomNumber(digits);
+                
+                // Ensure first number is always bigger than second number
+                // Also ensure num1 > num2 (not equal) for better practice
+                while (num1 <= num2) {
+                    num1 = getRandomNumber(digits);
+                    num2 = getRandomNumber(digits);
+                }
+                
+                // Format numbers with proper spacing
+                const num1Str = num1.toString().padStart(digits + 2, ' ');
+                const num2Str = num2.toString().padStart(digits + 2, ' ');
+                const lineLength = digits + 2;
+                
+                html += `
+                    <div class="problem">
+                        <div class="problem-row">${num1Str}</div>
+                        <div class="problem-row operator">${operationSymbol}</div>
+                        <div class="problem-row">${num2Str}</div>
+                        <div class="line"></div>
+                        <div class="problem-row" style="height: 30px;"></div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            worksheet.innerHTML = html;
+            worksheet.style.display = 'block';
+            
+            // Enable copy and download buttons
+            document.getElementById('copyBtn').disabled = false;
+            document.getElementById('downloadBtn').disabled = false;
+        }
+
+        function copyWorksheet() {
+            const worksheet = document.getElementById('worksheet');
+            
+            // Create a temporary canvas to convert to image
+            html2canvas(worksheet, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                logging: false
+            }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    navigator.clipboard.write([item]).then(() => {
+                        const btn = document.getElementById('copyBtn');
+                        const originalText = btn.textContent;
+                        btn.textContent = 'Copied!';
+                        btn.style.background = '#48bb78';
+                        setTimeout(() => {
+                            btn.textContent = originalText;
+                            btn.style.background = '';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy:', err);
+                        alert('Failed to copy to clipboard. Please try downloading instead.');
+                    });
+                });
+            });
+        }
+
+        function downloadPNG() {
+            const worksheet = document.getElementById('worksheet');
+            
+            html2canvas(worksheet, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `math-worksheet-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        // Generate worksheet on page load
+        window.addEventListener('load', () => {
+            generateWorksheet();
+        });
+    </script>
+</body>
+</html>
