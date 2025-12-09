@@ -15,7 +15,7 @@
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
         }
 
         .container {
@@ -24,44 +24,49 @@
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            padding: 30px;
+            padding: 20px;
         }
 
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
-            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-size: 1.8em;
         }
 
         .controls {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 20px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            flex: 1;
+            min-width: 150px;
         }
 
         label {
             font-weight: bold;
             color: #555;
-            font-size: 1.1em;
+            font-size: 1em;
         }
 
         select {
-            padding: 12px 20px;
-            font-size: 1.1em;
+            padding: 12px 15px;
+            font-size: 1em;
             border: 2px solid #ddd;
             border-radius: 8px;
             background: white;
             cursor: pointer;
             transition: border-color 0.3s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         select:hover {
@@ -77,18 +82,22 @@
         .button-group {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         button {
-            padding: 12px 30px;
-            font-size: 1.1em;
+            padding: 12px 20px;
+            font-size: 1em;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: bold;
+            flex: 1;
+            min-width: 120px;
+            touch-action: manipulation;
         }
 
         .btn-generate {
@@ -128,32 +137,38 @@
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         #worksheet {
             background: white;
-            padding: 40px;
+            padding: 20px;
             border: 2px solid #ddd;
             border-radius: 10px;
             display: none;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
         }
 
         .worksheet-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 30px 40px;
+            gap: 20px 25px;
             font-family: 'Courier New', monospace;
         }
 
         .problem {
-            min-width: 200px;
+            min-width: 0;
         }
 
         .problem-row {
             text-align: right;
-            padding: 5px 0;
-            font-size: 1.5em;
+            padding: 4px 0;
+            font-size: 1.2em;
             color: #333;
+            word-break: break-word;
         }
 
         .operator {
@@ -170,17 +185,133 @@
 
         .worksheet-title {
             text-align: center;
-            font-size: 1.8em;
-            margin-bottom: 30px;
+            font-size: 1.4em;
+            margin-bottom: 15px;
             color: #333;
             font-weight: bold;
         }
 
         .worksheet-info {
             text-align: center;
-            font-size: 1em;
-            margin-bottom: 20px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
             color: #666;
+        }
+
+        /* Tablet styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                padding: 15px;
+                border-radius: 10px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            .controls {
+                gap: 15px;
+            }
+
+            .worksheet-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px 30px;
+            }
+
+            .problem-row {
+                font-size: 1.3em;
+            }
+
+            .worksheet-title {
+                font-size: 1.3em;
+            }
+
+            #worksheet {
+                padding: 15px;
+            }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                padding: 10px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 1.3em;
+                margin-bottom: 15px;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .control-group {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            button {
+                width: 100%;
+                min-width: auto;
+                padding: 14px 20px;
+            }
+
+            .worksheet-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px 15px;
+            }
+
+            .problem-row {
+                font-size: 1.1em;
+                padding: 3px 0;
+            }
+
+            .worksheet-title {
+                font-size: 1.2em;
+                margin-bottom: 10px;
+            }
+
+            .worksheet-info {
+                font-size: 0.85em;
+                margin-bottom: 10px;
+            }
+
+            #worksheet {
+                padding: 10px;
+            }
+
+            .operator {
+                padding-left: 5px;
+            }
+        }
+
+        /* Very small mobile screens */
+        @media (max-width: 360px) {
+            .worksheet-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .problem-row {
+                font-size: 1em;
+            }
         }
 
         @media print {
