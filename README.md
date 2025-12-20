@@ -1,5 +1,5 @@
 
-![Zaarif](zaarif_profile.png)
+![Zaarif](zaarif_profile.jpg)
 
 
 Hi, My name is Zaarif Ahnaf Ali. I am 7 years old. I go to Sugarloaf Elementary School.
