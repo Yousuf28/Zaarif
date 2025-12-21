@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Practice - Interactive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Score Board */
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7f7f7;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            font-size: 1em;
+        }
+
+        select {
+            padding: 12px 15px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:hover {
+            border-color: #667eea;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Practice Tab */
+        .problem-container {
+            background: #f9f9f9;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .word-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .word-image {
+            font-size: 5em;
+            margin-bottom: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .word-hint {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .word-definition {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e6f3ff;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .spelling-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .spelling-input {
+            font-size: 2em;
+            text-align: center;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            padding: 15px 20px;
+            width: 100%;
+            max-width: 400px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.2em;
+            text-transform: lowercase;
+            transition: all 0.3s;
+        }
+
+        .spelling-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .spelling-input.correct {
+            border-color: #48bb78;
+            background-color: #f0fff4;
+        }
+
+        .spelling-input.incorrect {
+            border-color: #f56565;
+            background-color: #fff5f5;
+        }
+
+        .letter-hint {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .letter-box {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            background: white;
+        }
+
+        .letter-box.revealed {
+            background: #667eea;
+            color: white;
+        }
+
+        .letter-box.correct {
+            background: #48bb78;
+            border-color: #48bb78;
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-submit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-hint {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-hint:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-sound {
+            background: #10b981;
+            color: white;
+            font-size: 1.3em;
+        }
+
+        .btn-sound:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-next {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-new {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-new:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            display: block;
+        }
+
+        .correct-answer {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.3em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Learning Tab */
+        .learning-container {
+            text-align: center;
+        }
+
+        .word-builder {
+            background: #f9f9f9;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .word-slots {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            min-height: 80px;
+        }
+
+        .letter-slot {
+            width: 60px;
+            height: 60px;
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .letter-slot.filled {
+            border: 3px solid #48bb78;
+            background: #f0fff4;
+            color: #22543d;
+        }
+
+        .letter-tiles {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .letter-tile {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .letter-tile:hover {
+            background: #e6f3ff;
+            transform: scale(1.1);
+        }
+
+        .letter-tile.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .word-breakdown {
+            background: #fff9e6;
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .syllable {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            background: #fef3c7;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #78350f;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+
+            .container {
+                padding: 15px;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 1.4em;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                border-radius: 8px;
+                margin-bottom: 5px;
+            }
+
+            .word-image {
+                font-size: 4em;
+            }
+
+            .spelling-input {
+                font-size: 1.5em;
+                padding: 12px 15px;
+            }
+
+            .letter-box {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2em;
+            }
+
+            .letter-slot {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
+
+            .letter-tile {
+                width: 45px;
+                height: 45px;
+                font-size: 1.5em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spelling Practice</h1>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('practice')">Practice</button>
+            <button class="tab" onclick="switchTab('learning')">Learning</button>
+        </div>
+
+        <!-- Practice Tab -->
+        <div id="practiceTab" class="tab-content active">
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="score-label">Score</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Correct</div>
+                    <div class="score-value" id="correct">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Wrong</div>
+                    <div class="score-value" id="wrong">0</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="category">Category:</label>
+                    <select id="category">
+                        <option value="animals">Animals</option>
+                        <option value="colors">Colors</option>
+                        <option value="food">Food</option>
+                        <option value="body">Body Parts</option>
+                        <option value="nature">Nature</option>
+                        <option value="school">School</option>
+                        <option value="family">Family</option>
+                        <option value="actions">Actions</option>
+                        <option value="numbers">Numbers</option>
+                        <option value="shapes">Shapes</option>
+                        <option value="weather">Weather</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="sports">Sports</option>
+                        <option value="toys">Toys</option>
+                        <option value="feelings">Feelings</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="difficulty">Difficulty:</label>
+                    <select id="difficulty">
+                        <option value="easy">Easy (3-4 letters)</option>
+                        <option value="medium" selected>Medium (5-6 letters)</option>
+                        <option value="hard">Hard (7+ letters)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="problem-container">
+                <div class="word-display">
+                    <div class="word-image" id="wordImage"></div>
+                    <div class="word-hint" id="wordHint"></div>
+                    <div class="word-definition" id="wordDefinition"></div>
+                </div>
+                <div class="spelling-input-container">
+                    <input type="text" 
+                           class="spelling-input" 
+                           id="spellingInput" 
+                           placeholder="Type the word..."
+                           autocomplete="off"
+                           spellcheck="false">
+                    <div class="letter-hint" id="letterHint"></div>
+                </div>
+                <div class="feedback" id="feedback"></div>
+                <div class="correct-answer" id="correctAnswer"></div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-sound" onclick="playSound()" title="Hear the word">🔊</button>
+                <button class="btn-hint" id="hintBtn" onclick="showHint()">Hint</button>
+                <button class="btn-submit" id="submitBtn" onclick="checkSpelling()">Submit</button>
+                <button class="btn-next" id="nextBtn" onclick="generateNewWord()" style="display: none;">Next Word</button>
+                <button class="btn-new" onclick="resetGame()">New Game</button>
+            </div>
+        </div>
+
+        <!-- Learning Tab -->
+        <div id="learningTab" class="tab-content">
+            <div class="learning-container">
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="learningCategory">Category:</label>
+                        <select id="learningCategory">
+                            <option value="animals">Animals</option>
+                            <option value="colors">Colors</option>
+                            <option value="food">Food</option>
+                            <option value="body">Body Parts</option>
+                            <option value="nature">Nature</option>
+                            <option value="school">School</option>
+                            <option value="family">Family</option>
+                            <option value="actions">Actions</option>
+                            <option value="numbers">Numbers</option>
+                            <option value="shapes">Shapes</option>
+                            <option value="weather">Weather</option>
+                            <option value="transportation">Transportation</option>
+                            <option value="clothing">Clothing</option>
+                            <option value="sports">Sports</option>
+                            <option value="toys">Toys</option>
+                            <option value="feelings">Feelings</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="learningDifficulty">Difficulty:</label>
+                        <select id="learningDifficulty">
+                            <option value="easy">Easy (3-4 letters)</option>
+                            <option value="medium" selected>Medium (5-6 letters)</option>
+                            <option value="hard">Hard (7+ letters)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-submit" onclick="startLearning()" style="margin-bottom: 20px;">Start Learning</button>
+
+                <div id="learningVisual" class="word-builder" style="display: none;">
+                    <div class="word-display">
+                        <div class="word-image" id="learningImage"></div>
+                        <div class="word-hint" id="learningHint"></div>
+                        <div class="word-definition" id="learningDefinition"></div>
+                    </div>
+                    <div class="word-breakdown" id="wordBreakdown"></div>
+                    <div class="word-slots" id="wordSlots"></div>
+                    <div class="letter-tiles" id="letterTiles"></div>
+                    <div class="button-group">
+                        <button class="btn-sound" onclick="playLearningSound()">🔊 Hear Word</button>
+                        <button class="btn-submit" onclick="checkLearningWord()">Check</button>
+                        <button class="btn-next" onclick="nextLearningWord()">Next Word</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Word database
+        const wordDatabase = {
+            animals: {
+                easy: [
+                    { word: 'cat', emoji: '🐱', hint: 'Meows', definition: 'A furry pet that meows' },
+                    { word: 'dog', emoji: '🐶', hint: 'Barks', definition: 'A loyal pet that barks' },
+                    { word: 'pig', emoji: '🐷', hint: 'Oinks', definition: 'A farm animal that oinks' },
+                    { word: 'cow', emoji: '🐄', hint: 'Moo', definition: 'A farm animal that gives milk' },
+                    { word: 'bee', emoji: '🐝', hint: 'Buzzes', definition: 'A flying insect that makes honey' },
+                    { word: 'hen', emoji: '🐔', hint: 'Lays eggs', definition: 'A bird that lays eggs' },
+                    { word: 'duck', emoji: '🦆', hint: 'Quacks', definition: 'A bird that quacks and swims' },
+                    { word: 'fox', emoji: '🦊', hint: 'Sly animal', definition: 'A clever wild animal' },
+                    { word: 'owl', emoji: '🦉', hint: 'Hoots', definition: 'A bird that hoots at night' },
+                    { word: 'bat', emoji: '🦇', hint: 'Flies at night', definition: 'A flying mammal' }
+                ],
+                medium: [
+                    { word: 'tiger', emoji: '🐯', hint: 'Big cat', definition: 'A large striped wild cat' },
+                    { word: 'panda', emoji: '🐼', hint: 'Black and white', definition: 'A black and white bear from China' },
+                    { word: 'zebra', emoji: '🦓', hint: 'Stripes', definition: 'A black and white striped horse' },
+                    { word: 'monkey', emoji: '🐵', hint: 'Swings', definition: 'An animal that swings in trees' },
+                    { word: 'rabbit', emoji: '🐰', hint: 'Hops', definition: 'A fluffy animal that hops' },
+                    { word: 'turtle', emoji: '🐢', hint: 'Shell', definition: 'An animal with a hard shell' },
+                    { word: 'dolphin', emoji: '🐬', hint: 'Swims', definition: 'A smart sea animal' },
+                    { word: 'elephant', emoji: '🐘', hint: 'Trunk', definition: 'A very large animal with a trunk' },
+                    { word: 'penguin', emoji: '🐧', hint: 'Antarctica', definition: 'A black and white bird that cannot fly' },
+                    { word: 'lion', emoji: '🦁', hint: 'King', definition: 'The king of the jungle' },
+                    { word: 'bear', emoji: '🐻', hint: 'Hibernates', definition: 'A large furry animal' },
+                    { word: 'horse', emoji: '🐴', hint: 'Neighs', definition: 'An animal you can ride' },
+                    { word: 'sheep', emoji: '🐑', hint: 'Baa', definition: 'A fluffy farm animal' },
+                    { word: 'goat', emoji: '🐐', hint: 'Mountain', definition: 'An animal that climbs mountains' }
+                ],
+                hard: [
+                    { word: 'giraffe', emoji: '🦒', hint: 'Long neck', definition: 'An animal with a very long neck' },
+                    { word: 'butterfly', emoji: '🦋', hint: 'Flies', definition: 'A colorful flying insect' },
+                    { word: 'crocodile', emoji: '🐊', hint: 'Reptile', definition: 'A large reptile with sharp teeth' },
+                    { word: 'kangaroo', emoji: '🦘', hint: 'Jumps', definition: 'An animal that jumps and has a pouch' },
+                    { word: 'hippopotamus', emoji: '🦛', hint: 'Big water', definition: 'A very large water animal' },
+                    { word: 'rhinoceros', emoji: '🦏', hint: 'Horn', definition: 'An animal with a horn on its nose' },
+                    { word: 'chameleon', emoji: '🦎', hint: 'Changes color', definition: 'A lizard that changes colors' },
+                    { word: 'octopus', emoji: '🐙', hint: 'Eight arms', definition: 'A sea animal with eight arms' }
+                ]
+            },
+            colors: {
+                easy: [
+                    { word: 'red', emoji: '🔴', hint: 'Apple color', definition: 'The color of apples and roses' },
+                    { word: 'blue', emoji: '🔵', hint: 'Sky color', definition: 'The color of the sky and ocean' },
+                    { word: 'green', emoji: '🟢', hint: 'Grass color', definition: 'The color of grass and leaves' },
+                    { word: 'pink', emoji: '🌸', hint: 'Flower color', definition: 'A light red color' },
+                    { word: 'gray', emoji: '⚪', hint: 'Cloud color', definition: 'The color of clouds and elephants' }
+                ],
+                medium: [
+                    { word: 'yellow', emoji: '🟡', hint: 'Sun color', definition: 'The color of the sun and bananas' },
+                    { word: 'orange', emoji: '🟠', hint: 'Fruit color', definition: 'The color of oranges and pumpkins' },
+                    { word: 'purple', emoji: '🟣', hint: 'Grape color', definition: 'The color of grapes and plums' },
+                    { word: 'brown', emoji: '🟤', hint: 'Tree color', definition: 'The color of tree trunks and chocolate' },
+                    { word: 'black', emoji: '⚫', hint: 'Night color', definition: 'The darkest color' },
+                    { word: 'white', emoji: '⚪', hint: 'Snow color', definition: 'The lightest color, like snow' }
+                ],
+                hard: [
+                    { word: 'rainbow', emoji: '🌈', hint: 'All colors', definition: 'All colors together in the sky' },
+                    { word: 'silver', emoji: '🥈', hint: 'Metal color', definition: 'A shiny gray color like metal' },
+                    { word: 'golden', emoji: '🥇', hint: 'Treasure color', definition: 'A shiny yellow color like treasure' },
+                    { word: 'turquoise', emoji: '💎', hint: 'Blue-green', definition: 'A blue-green color like the ocean' },
+                    { word: 'magenta', emoji: '💜', hint: 'Pink-purple', definition: 'A bright pink-purple color' }
+                ]
+            },
+            food: {
+                easy: [
+                    { word: 'apple', emoji: '🍎', hint: 'Red fruit', definition: 'A round red or green fruit' },
+                    { word: 'bread', emoji: '🍞', hint: 'Baked', definition: 'Food made from flour and baked' },
+                    { word: 'milk', emoji: '🥛', hint: 'White drink', definition: 'A white drink from cows' },
+                    { word: 'rice', emoji: '🍚', hint: 'Grain', definition: 'Small white grains we eat' },
+                    { word: 'egg', emoji: '🥚', hint: 'Chicken', definition: 'What a chicken lays' },
+                    { word: 'fish', emoji: '🐟', hint: 'Swims', definition: 'An animal that lives in water' },
+                    { word: 'corn', emoji: '🌽', hint: 'Yellow', definition: 'Yellow kernels on a cob' },
+                    { word: 'cake', emoji: '🎂', hint: 'Sweet', definition: 'A sweet dessert' }
+                ],
+                medium: [
+                    { word: 'banana', emoji: '🍌', hint: 'Yellow fruit', definition: 'A long yellow fruit' },
+                    { word: 'orange', emoji: '🍊', hint: 'Round fruit', definition: 'A round orange fruit' },
+                    { word: 'pizza', emoji: '🍕', hint: 'Italian food', definition: 'Round food with cheese and toppings' },
+                    { word: 'cookie', emoji: '🍪', hint: 'Sweet treat', definition: 'A sweet baked snack' },
+                    { word: 'carrot', emoji: '🥕', hint: 'Orange vegetable', definition: 'An orange vegetable that rabbits love' },
+                    { word: 'tomato', emoji: '🍅', hint: 'Red vegetable', definition: 'A red round vegetable' },
+                    { word: 'grapes', emoji: '🍇', hint: 'Bunch', definition: 'Small round fruits in a bunch' },
+                    { word: 'cherry', emoji: '🍒', hint: 'Red fruit', definition: 'A small red fruit with a pit' },
+                    { word: 'onion', emoji: '🧅', hint: 'Layers', definition: 'A vegetable with many layers' },
+                    { word: 'potato', emoji: '🥔', hint: 'Brown', definition: 'A brown vegetable that grows underground' },
+                    { word: 'cheese', emoji: '🧀', hint: 'Dairy', definition: 'A food made from milk' },
+                    { word: 'butter', emoji: '🧈', hint: 'Spread', definition: 'A yellow spread made from milk' }
+                ],
+                hard: [
+                    { word: 'sandwich', emoji: '🥪', hint: 'Bread with filling', definition: 'Bread with food inside' },
+                    { word: 'pineapple', emoji: '🍍', hint: 'Tropical fruit', definition: 'A tropical fruit with a spiky top' },
+                    { word: 'strawberry', emoji: '🍓', hint: 'Red berry', definition: 'A small red fruit with seeds' },
+                    { word: 'hamburger', emoji: '🍔', hint: 'Fast food', definition: 'Meat between two buns' },
+                    { word: 'watermelon', emoji: '🍉', hint: 'Big fruit', definition: 'A large green fruit with red inside' },
+                    { word: 'chocolate', emoji: '🍫', hint: 'Sweet treat', definition: 'A brown sweet candy' },
+                    { word: 'spaghetti', emoji: '🍝', hint: 'Long noodles', definition: 'Long thin pasta' },
+                    { word: 'broccoli', emoji: '🥦', hint: 'Green vegetable', definition: 'A green vegetable that looks like a tree' }
+                ]
+            },
+            body: {
+                easy: [
+                    { word: 'eye', emoji: '👁️', hint: 'See', definition: 'You use this to see' },
+                    { word: 'ear', emoji: '👂', hint: 'Hear', definition: 'You use this to hear' },
+                    { word: 'arm', emoji: '💪', hint: 'Lift', definition: 'You use this to lift things' },
+                    { word: 'leg', emoji: '🦵', hint: 'Walk', definition: 'You use this to walk' },
+                    { word: 'hand', emoji: '✋', hint: 'Five fingers', definition: 'You have two of these at the end of your arms' },
+                    { word: 'foot', emoji: '🦶', hint: 'Five toes', definition: 'You have two of these at the end of your legs' },
+                    { word: 'nose', emoji: '👃', hint: 'Smell', definition: 'You use this to smell' },
+                    { word: 'mouth', emoji: '👄', hint: 'Eat and talk', definition: 'You use this to eat and speak' }
+                ],
+                medium: [
+                    { word: 'finger', emoji: '👆', hint: 'Point', definition: 'You have ten of these on your hands' },
+                    { word: 'elbow', emoji: '🤏', hint: 'Bend', definition: 'The joint in your arm' },
+                    { word: 'shoulder', emoji: '💪', hint: 'Arm joint', definition: 'Where your arm connects' },
+                    { word: 'knee', emoji: '🦵', hint: 'Leg joint', definition: 'The joint in your leg' },
+                    { word: 'ankle', emoji: '🦶', hint: 'Foot joint', definition: 'The joint above your foot' },
+                    { word: 'thumb', emoji: '👍', hint: 'Short finger', definition: 'The short finger on your hand' },
+                    { word: 'wrist', emoji: '🤲', hint: 'Hand joint', definition: 'The joint between your hand and arm' },
+                    { word: 'tooth', emoji: '🦷', hint: 'In mouth', definition: 'White things in your mouth' },
+                    { word: 'tongue', emoji: '👅', hint: 'Taste', definition: 'You use this to taste food' },
+                    { word: 'cheek', emoji: '😊', hint: 'Face', definition: 'The soft part of your face' }
+                ],
+                hard: [
+                    { word: 'forehead', emoji: '🧠', hint: 'Above eyes', definition: 'The part of your head above your eyes' },
+                    { word: 'stomach', emoji: '🤰', hint: 'Digest', definition: 'Where food goes after you eat' },
+                    { word: 'eyebrow', emoji: '🤨', hint: 'Above eye', definition: 'Hair above your eyes' },
+                    { word: 'eyelash', emoji: '👁️', hint: 'On eye', definition: 'Hair on your eyelids' },
+                    { word: 'shoulder', emoji: '💪', hint: 'Upper body', definition: 'The part where your arm connects' }
+                ]
+            },
+            nature: {
+                easy: [
+                    { word: 'tree', emoji: '🌳', hint: 'Tall plant', definition: 'A tall plant with leaves' },
+                    { word: 'sun', emoji: '☀️', hint: 'Bright star', definition: 'The bright star in the sky' },
+                    { word: 'moon', emoji: '🌙', hint: 'Night light', definition: 'The light in the night sky' },
+                    { word: 'star', emoji: '⭐', hint: 'Twinkles', definition: 'A twinkling light in the sky' },
+                    { word: 'leaf', emoji: '🍃', hint: 'On tree', definition: 'Part of a tree or plant' },
+                    { word: 'rock', emoji: '🪨', hint: 'Hard', definition: 'A hard stone' },
+                    { word: 'rain', emoji: '🌧️', hint: 'Water falls', definition: 'Water that falls from the sky' },
+                    { word: 'snow', emoji: '❄️', hint: 'White', definition: 'White frozen water that falls' }
+                ],
+                medium: [
+                    { word: 'flower', emoji: '🌸', hint: 'Blooms', definition: 'A colorful plant that blooms' },
+                    { word: 'cloud', emoji: '☁️', hint: 'In sky', definition: 'White fluffy things in the sky' },
+                    { word: 'ocean', emoji: '🌊', hint: 'Big water', definition: 'A very large body of water' },
+                    { word: 'mountain', emoji: '⛰️', hint: 'Tall hill', definition: 'A very tall hill' },
+                    { word: 'forest', emoji: '🌲', hint: 'Many trees', definition: 'A place with many trees' },
+                    { word: 'river', emoji: '🌊', hint: 'Flowing water', definition: 'Water that flows' },
+                    { word: 'beach', emoji: '🏖️', hint: 'Sand', definition: 'A sandy place by the ocean' },
+                    { word: 'island', emoji: '🏝️', hint: 'Water around', definition: 'Land surrounded by water' },
+                    { word: 'valley', emoji: '🏔️', hint: 'Between mountains', definition: 'Low land between mountains' },
+                    { word: 'desert', emoji: '🏜️', hint: 'Dry', definition: 'A very dry place with sand' },
+                    { word: 'garden', emoji: '🌻', hint: 'Plants', definition: 'A place where plants grow' },
+                    { word: 'meadow', emoji: '🌾', hint: 'Grass', definition: 'A field with grass and flowers' }
+                ],
+                hard: [
+                    { word: 'butterfly', emoji: '🦋', hint: 'Flies', definition: 'A colorful flying insect' },
+                    { word: 'rainbow', emoji: '🌈', hint: 'Colors', definition: 'All colors in the sky after rain' },
+                    { word: 'thunder', emoji: '⛈️', hint: 'Loud sound', definition: 'A loud sound during storms' },
+                    { word: 'lightning', emoji: '⚡', hint: 'Electric', definition: 'Bright light in the sky during storms' },
+                    { word: 'tornado', emoji: '🌪️', hint: 'Spinning wind', definition: 'A spinning column of wind' },
+                    { word: 'volcano', emoji: '🌋', hint: 'Erupts', definition: 'A mountain that erupts with lava' },
+                    { word: 'waterfall', emoji: '💧', hint: 'Falling water', definition: 'Water falling from a height' },
+                    { word: 'horizon', emoji: '🌅', hint: 'Sky meets land', definition: 'Where the sky meets the land' }
+                ]
+            },
+            school: {
+                easy: [
+                    { word: 'book', emoji: '📚', hint: 'Read', definition: 'You read this' },
+                    { word: 'pen', emoji: '✏️', hint: 'Write', definition: 'You use this to write' },
+                    { word: 'desk', emoji: '🪑', hint: 'Sit at', definition: 'A table you sit at in school' },
+                    { word: 'bag', emoji: '🎒', hint: 'Carry', definition: 'You carry books in this' },
+                    { word: 'chair', emoji: '🪑', hint: 'Sit on', definition: 'You sit on this' },
+                    { word: 'table', emoji: '🪑', hint: 'Put things on', definition: 'A flat surface with legs' },
+                    { word: 'door', emoji: '🚪', hint: 'Open and close', definition: 'You go through this' },
+                    { word: 'window', emoji: '🪟', hint: 'See outside', definition: 'You look through this' }
+                ],
+                medium: [
+                    { word: 'pencil', emoji: '✏️', hint: 'Draw', definition: 'You use this to draw and write' },
+                    { word: 'eraser', emoji: '🧹', hint: 'Remove', definition: 'You use this to remove mistakes' },
+                    { word: 'ruler', emoji: '📏', hint: 'Measure', definition: 'You use this to measure things' },
+                    { word: 'crayon', emoji: '🖍️', hint: 'Color', definition: 'You use this to color pictures' },
+                    { word: 'glue', emoji: '🧴', hint: 'Stick', definition: 'You use this to stick things together' },
+                    { word: 'scissors', emoji: '✂️', hint: 'Cut', definition: 'You use this to cut paper' },
+                    { word: 'marker', emoji: '🖊️', hint: 'Colorful', definition: 'A colorful pen for drawing' },
+                    { word: 'stapler', emoji: '📎', hint: 'Attach', definition: 'You use this to attach papers' },
+                    { word: 'compass', emoji: '🧭', hint: 'Direction', definition: 'A tool to find direction' },
+                    { word: 'globe', emoji: '🌍', hint: 'Earth', definition: 'A round model of the Earth' },
+                    { word: 'chalk', emoji: '🖍️', hint: 'Write on board', definition: 'You use this to write on a blackboard' },
+                    { word: 'folder', emoji: '📁', hint: 'Organize', definition: 'You keep papers in this' }
+                ],
+                hard: [
+                    { word: 'backpack', emoji: '🎒', hint: 'Carry books', definition: 'A bag you carry on your back' },
+                    { word: 'notebook', emoji: '📓', hint: 'Write notes', definition: 'A book where you write notes' },
+                    { word: 'calculator', emoji: '🔢', hint: 'Math tool', definition: 'A tool to do math problems' },
+                    { word: 'dictionary', emoji: '📖', hint: 'Word meanings', definition: 'A book with word meanings' },
+                    { word: 'computer', emoji: '💻', hint: 'Screen', definition: 'An electronic device for work and play' },
+                    { word: 'keyboard', emoji: '⌨️', hint: 'Type', definition: 'You type on this' },
+                    { word: 'blackboard', emoji: '🖤', hint: 'Write on', definition: 'A dark board to write on' },
+                    { word: 'textbook', emoji: '📖', hint: 'Learn from', definition: 'A book you learn from in school' }
+                ]
+            },
+            family: {
+                easy: [
+                    { word: 'mom', emoji: '👩', hint: 'Mother', definition: 'Your mother' },
+                    { word: 'dad', emoji: '👨', hint: 'Father', definition: 'Your father' },
+                    { word: 'baby', emoji: '👶', hint: 'Little one', definition: 'A very young child' },
+                    { word: 'son', emoji: '👦', hint: 'Boy child', definition: 'A parent\'s boy child' },
+                    { word: 'girl', emoji: '👧', hint: 'Female child', definition: 'A young female person' },
+                    { word: 'boy', emoji: '👦', hint: 'Male child', definition: 'A young male person' }
+                ],
+                medium: [
+                    { word: 'sister', emoji: '👧', hint: 'Girl sibling', definition: 'A girl who has the same parents' },
+                    { word: 'brother', emoji: '👦', hint: 'Boy sibling', definition: 'A boy who has the same parents' },
+                    { word: 'grandma', emoji: '👵', hint: 'Grandmother', definition: 'Your mother or father\'s mother' },
+                    { word: 'grandpa', emoji: '👴', hint: 'Grandfather', definition: 'Your mother or father\'s father' },
+                    { word: 'aunt', emoji: '👩', hint: 'Parent\'s sister', definition: 'Your parent\'s sister' },
+                    { word: 'uncle', emoji: '👨', hint: 'Parent\'s brother', definition: 'Your parent\'s brother' },
+                    { word: 'parent', emoji: '👨‍👩‍👧', hint: 'Mom or dad', definition: 'Your mother or father' },
+                    { word: 'daughter', emoji: '👧', hint: 'Girl child', definition: 'A parent\'s girl child' },
+                    { word: 'nephew', emoji: '👦', hint: 'Brother\'s son', definition: 'Your sibling\'s son' },
+                    { word: 'niece', emoji: '👧', hint: 'Brother\'s daughter', definition: 'Your sibling\'s daughter' }
+                ],
+                hard: [
+                    { word: 'cousin', emoji: '👨‍👩‍👧', hint: 'Aunt\'s child', definition: 'Your aunt or uncle\'s child' },
+                    { word: 'family', emoji: '👨‍👩‍👧‍👦', hint: 'All together', definition: 'All the people related to you' },
+                    { word: 'grandmother', emoji: '👵', hint: 'Grandma', definition: 'Your mother or father\'s mother' },
+                    { word: 'grandfather', emoji: '👴', hint: 'Grandpa', definition: 'Your mother or father\'s father' },
+                    { word: 'grandchild', emoji: '👶', hint: 'Grandparent\'s child', definition: 'A grandparent\'s child' }
+                ]
+            },
+            actions: {
+                easy: [
+                    { word: 'run', emoji: '🏃', hint: 'Fast walk', definition: 'To move very fast on your feet' },
+                    { word: 'jump', emoji: '🦘', hint: 'Up', definition: 'To go up in the air' },
+                    { word: 'sit', emoji: '🪑', hint: 'Down', definition: 'To rest on a chair' },
+                    { word: 'eat', emoji: '🍽️', hint: 'Food', definition: 'To have food' },
+                    { word: 'walk', emoji: '🚶', hint: 'Move', definition: 'To move on your feet slowly' },
+                    { word: 'play', emoji: '🎮', hint: 'Have fun', definition: 'To have fun and enjoy' },
+                    { word: 'read', emoji: '📖', hint: 'Books', definition: 'To look at words and understand them' },
+                    { word: 'draw', emoji: '🎨', hint: 'Picture', definition: 'To make a picture' }
+                ],
+                medium: [
+                    { word: 'dance', emoji: '💃', hint: 'Move to music', definition: 'To move your body to music' },
+                    { word: 'sleep', emoji: '😴', hint: 'Rest', definition: 'To close your eyes and rest' },
+                    { word: 'laugh', emoji: '😂', hint: 'Happy sound', definition: 'To make a happy sound' },
+                    { word: 'smile', emoji: '😊', hint: 'Happy face', definition: 'To show you are happy' },
+                    { word: 'climb', emoji: '🧗', hint: 'Go up', definition: 'To go up something' },
+                    { word: 'swim', emoji: '🏊', hint: 'In water', definition: 'To move in water' },
+                    { word: 'sing', emoji: '🎤', hint: 'Music', definition: 'To make music with your voice' },
+                    { word: 'write', emoji: '✍️', hint: 'Words', definition: 'To make words with a pen' },
+                    { word: 'paint', emoji: '🎨', hint: 'Color', definition: 'To put color on something' },
+                    { word: 'build', emoji: '🏗️', hint: 'Make', definition: 'To make or create something' },
+                    { word: 'throw', emoji: '⚾', hint: 'Ball', definition: 'To send something through the air' },
+                    { word: 'catch', emoji: '🤲', hint: 'Grab', definition: 'To grab something in the air' }
+                ],
+                hard: [
+                    { word: 'exercise', emoji: '💪', hint: 'Stay fit', definition: 'To move your body to stay healthy' },
+                    { word: 'celebrate', emoji: '🎉', hint: 'Happy event', definition: 'To be happy about something special' },
+                    { word: 'discover', emoji: '🔍', hint: 'Find', definition: 'To find something new' },
+                    { word: 'explore', emoji: '🧭', hint: 'Adventure', definition: 'To go and see new places' },
+                    { word: 'remember', emoji: '🧠', hint: 'Think back', definition: 'To think about something from the past' },
+                    { word: 'imagine', emoji: '💭', hint: 'Think', definition: 'To think about something in your mind' },
+                    { word: 'whisper', emoji: '🤫', hint: 'Quiet talk', definition: 'To talk very quietly' },
+                    { word: 'wonder', emoji: '🤔', hint: 'Question', definition: 'To think and question about something' }
+                ]
+            },
+            numbers: {
+                easy: [
+                    { word: 'one', emoji: '1️⃣', hint: 'First number', definition: 'The number 1' },
+                    { word: 'two', emoji: '2️⃣', hint: 'Second number', definition: 'The number 2' },
+                    { word: 'three', emoji: '3️⃣', hint: 'Third number', definition: 'The number 3' },
+                    { word: 'four', emoji: '4️⃣', hint: 'Fourth number', definition: 'The number 4' },
+                    { word: 'five', emoji: '5️⃣', hint: 'Fifth number', definition: 'The number 5' },
+                    { word: 'six', emoji: '6️⃣', hint: 'Sixth number', definition: 'The number 6' },
+                    { word: 'seven', emoji: '7️⃣', hint: 'Seventh number', definition: 'The number 7' },
+                    { word: 'eight', emoji: '8️⃣', hint: 'Eighth number', definition: 'The number 8' }
+                ],
+                medium: [
+                    { word: 'nine', emoji: '9️⃣', hint: 'Ninth number', definition: 'The number 9' },
+                    { word: 'ten', emoji: '🔟', hint: 'Tenth number', definition: 'The number 10' },
+                    { word: 'eleven', emoji: '1️⃣1️⃣', hint: 'After ten', definition: 'The number 11' },
+                    { word: 'twelve', emoji: '1️⃣2️⃣', hint: 'After eleven', definition: 'The number 12' },
+                    { word: 'twenty', emoji: '2️⃣0️⃣', hint: 'Two tens', definition: 'The number 20' },
+                    { word: 'thirty', emoji: '3️⃣0️⃣', hint: 'Three tens', definition: 'The number 30' },
+                    { word: 'fifty', emoji: '5️⃣0️⃣', hint: 'Five tens', definition: 'The number 50' },
+                    { word: 'hundred', emoji: '💯', hint: 'Ten tens', definition: 'The number 100' }
+                ],
+                hard: [
+                    { word: 'thirteen', emoji: '1️⃣3️⃣', hint: 'After twelve', definition: 'The number 13' },
+                    { word: 'fourteen', emoji: '1️⃣4️⃣', hint: 'After thirteen', definition: 'The number 14' },
+                    { word: 'fifteen', emoji: '1️⃣5️⃣', hint: 'After fourteen', definition: 'The number 15' },
+                    { word: 'sixteen', emoji: '1️⃣6️⃣', hint: 'After fifteen', definition: 'The number 16' },
+                    { word: 'seventeen', emoji: '1️⃣7️⃣', hint: 'After sixteen', definition: 'The number 17' },
+                    { word: 'eighteen', emoji: '1️⃣8️⃣', hint: 'After seventeen', definition: 'The number 18' },
+                    { word: 'nineteen', emoji: '1️⃣9️⃣', hint: 'After eighteen', definition: 'The number 19' },
+                    { word: 'thousand', emoji: '1️⃣0️⃣0️⃣0️⃣', hint: 'Ten hundreds', definition: 'The number 1000' }
+                ]
+            },
+            shapes: {
+                easy: [
+                    { word: 'circle', emoji: '⭕', hint: 'Round', definition: 'A round shape' },
+                    { word: 'square', emoji: '⬜', hint: 'Four sides', definition: 'A shape with four equal sides' },
+                    { word: 'star', emoji: '⭐', hint: 'Points', definition: 'A shape with five points' },
+                    { word: 'heart', emoji: '❤️', hint: 'Love', definition: 'A shape that means love' }
+                ],
+                medium: [
+                    { word: 'triangle', emoji: '🔺', hint: 'Three sides', definition: 'A shape with three sides' },
+                    { word: 'rectangle', emoji: '▬', hint: 'Four sides', definition: 'A shape with four sides, longer than wide' },
+                    { word: 'diamond', emoji: '💎', hint: 'Sparkly', definition: 'A shape with four equal sides at angles' },
+                    { word: 'oval', emoji: '🥚', hint: 'Egg shape', definition: 'A shape like an egg' },
+                    { word: 'crescent', emoji: '🌙', hint: 'Moon shape', definition: 'A shape like the moon' },
+                    { word: 'pentagon', emoji: '⬟', hint: 'Five sides', definition: 'A shape with five sides' }
+                ],
+                hard: [
+                    { word: 'hexagon', emoji: '⬡', hint: 'Six sides', definition: 'A shape with six sides' },
+                    { word: 'octagon', emoji: '🛑', hint: 'Eight sides', definition: 'A shape with eight sides' },
+                    { word: 'cylinder', emoji: '🥫', hint: 'Can shape', definition: 'A 3D shape like a can' },
+                    { word: 'pyramid', emoji: '🔺', hint: 'Egypt', definition: 'A 3D shape with a triangle base' },
+                    { word: 'sphere', emoji: '⚽', hint: 'Ball shape', definition: 'A 3D round shape like a ball' },
+                    { word: 'cube', emoji: '🎲', hint: 'Dice shape', definition: 'A 3D shape with six square sides' }
+                ]
+            },
+            weather: {
+                easy: [
+                    { word: 'sun', emoji: '☀️', hint: 'Bright', definition: 'The bright star in the sky' },
+                    { word: 'rain', emoji: '🌧️', hint: 'Water falls', definition: 'Water falling from the sky' },
+                    { word: 'wind', emoji: '💨', hint: 'Blows', definition: 'Moving air' },
+                    { word: 'snow', emoji: '❄️', hint: 'White', definition: 'White frozen water that falls' },
+                    { word: 'cloud', emoji: '☁️', hint: 'In sky', definition: 'White fluffy things in the sky' }
+                ],
+                medium: [
+                    { word: 'storm', emoji: '⛈️', hint: 'Loud', definition: 'Loud weather with rain and thunder' },
+                    { word: 'rainbow', emoji: '🌈', hint: 'Colors', definition: 'All colors in the sky after rain' },
+                    { word: 'lightning', emoji: '⚡', hint: 'Electric', definition: 'Bright light in the sky during storms' },
+                    { word: 'thunder', emoji: '⛈️', hint: 'Loud sound', definition: 'A loud sound during storms' },
+                    { word: 'tornado', emoji: '🌪️', hint: 'Spinning', definition: 'A spinning column of wind' },
+                    { word: 'fog', emoji: '🌫️', hint: 'Misty', definition: 'Thick mist in the air' },
+                    { word: 'hail', emoji: '🧊', hint: 'Ice balls', definition: 'Frozen balls of ice that fall' },
+                    { word: 'breeze', emoji: '💨', hint: 'Gentle wind', definition: 'A gentle, pleasant wind' }
+                ],
+                hard: [
+                    { word: 'hurricane', emoji: '🌀', hint: 'Big storm', definition: 'A very large and powerful storm' },
+                    { word: 'blizzard', emoji: '🌨️', hint: 'Snow storm', definition: 'A severe snowstorm' },
+                    { word: 'drizzle', emoji: '🌦️', hint: 'Light rain', definition: 'Light, gentle rain' },
+                    { word: 'sunshine', emoji: '☀️', hint: 'Sun light', definition: 'Bright light from the sun' },
+                    { word: 'temperature', emoji: '🌡️', hint: 'Hot or cold', definition: 'How hot or cold it is' }
+                ]
+            },
+            transportation: {
+                easy: [
+                    { word: 'car', emoji: '🚗', hint: 'Drives', definition: 'A vehicle with four wheels' },
+                    { word: 'bus', emoji: '🚌', hint: 'Many people', definition: 'A large vehicle that carries many people' },
+                    { word: 'bike', emoji: '🚲', hint: 'Pedals', definition: 'A vehicle with two wheels and pedals' },
+                    { word: 'boat', emoji: '⛵', hint: 'Water', definition: 'A vehicle that floats on water' },
+                    { word: 'train', emoji: '🚂', hint: 'Tracks', definition: 'A vehicle that runs on tracks' }
+                ],
+                medium: [
+                    { word: 'airplane', emoji: '✈️', hint: 'Flies', definition: 'A vehicle that flies in the sky' },
+                    { word: 'truck', emoji: '🚚', hint: 'Carries things', definition: 'A large vehicle that carries things' },
+                    { word: 'motorcycle', emoji: '🏍️', hint: 'Two wheels', definition: 'A vehicle with two wheels and a motor' },
+                    { word: 'scooter', emoji: '🛴', hint: 'Stand on', definition: 'A small vehicle you stand on' },
+                    { word: 'subway', emoji: '🚇', hint: 'Underground', definition: 'A train that runs underground' },
+                    { word: 'helicopter', emoji: '🚁', hint: 'Rotor', definition: 'A flying vehicle with spinning blades' },
+                    { word: 'sailboat', emoji: '⛵', hint: 'Sails', definition: 'A boat with sails' },
+                    { word: 'taxi', emoji: '🚕', hint: 'Pay to ride', definition: 'A car you pay to ride in' }
+                ],
+                hard: [
+                    { word: 'ambulance', emoji: '🚑', hint: 'Emergency', definition: 'A vehicle that helps sick people' },
+                    { word: 'firetruck', emoji: '🚒', hint: 'Fire', definition: 'A vehicle that puts out fires' },
+                    { word: 'tractor', emoji: '🚜', hint: 'Farm', definition: 'A vehicle used on farms' },
+                    { word: 'snowmobile', emoji: '🛷', hint: 'Snow', definition: 'A vehicle for driving on snow' },
+                    { word: 'skateboard', emoji: '🛹', hint: 'Wheels', definition: 'A board with wheels you ride' },
+                    { word: 'rocket', emoji: '🚀', hint: 'Space', definition: 'A vehicle that goes to space' }
+                ]
+            },
+            clothing: {
+                easy: [
+                    { word: 'hat', emoji: '👒', hint: 'On head', definition: 'Something you wear on your head' },
+                    { word: 'shoe', emoji: '👟', hint: 'On feet', definition: 'Something you wear on your feet' },
+                    { word: 'sock', emoji: '🧦', hint: 'Under shoe', definition: 'Something you wear under your shoes' },
+                    { word: 'shirt', emoji: '👕', hint: 'On body', definition: 'Something you wear on your upper body' },
+                    { word: 'pants', emoji: '👖', hint: 'Legs', definition: 'Something you wear on your legs' }
+                ],
+                medium: [
+                    { word: 'jacket', emoji: '🧥', hint: 'Warm', definition: 'A warm piece of clothing' },
+                    { word: 'dress', emoji: '👗', hint: 'Girls wear', definition: 'A piece of clothing girls wear' },
+                    { word: 'skirt', emoji: '👗', hint: 'Girls wear', definition: 'A piece of clothing that goes around the waist' },
+                    { word: 'sweater', emoji: '🧶', hint: 'Warm', definition: 'A warm piece of clothing' },
+                    { word: 'gloves', emoji: '🧤', hint: 'Hands', definition: 'Something you wear on your hands' },
+                    { word: 'scarf', emoji: '🧣', hint: 'Neck', definition: 'Something you wear around your neck' },
+                    { word: 'boots', emoji: '👢', hint: 'Feet', definition: 'Tall shoes' },
+                    { word: 'shorts', emoji: '🩳', hint: 'Short pants', definition: 'Short pants' }
+                ],
+                hard: [
+                    { word: 'sunglasses', emoji: '🕶️', hint: 'Eyes', definition: 'Glasses you wear in the sun' },
+                    { word: 'backpack', emoji: '🎒', hint: 'Carry', definition: 'A bag you carry on your back' },
+                    { word: 'umbrella', emoji: '☂️', hint: 'Rain', definition: 'Something you hold over your head in rain' },
+                    { word: 'bikini', emoji: '👙', hint: 'Swimming', definition: 'Clothing for swimming' },
+                    { word: 'pajamas', emoji: '🛏️', hint: 'Sleep', definition: 'Clothing you wear to sleep' },
+                    { word: 'costume', emoji: '🎭', hint: 'Dress up', definition: 'Special clothing for pretending' }
+                ]
+            },
+            sports: {
+                easy: [
+                    { word: 'ball', emoji: '⚽', hint: 'Round', definition: 'A round object you play with' },
+                    { word: 'bat', emoji: '🏏', hint: 'Hit ball', definition: 'Something you use to hit a ball' },
+                    { word: 'run', emoji: '🏃', hint: 'Fast', definition: 'To move very fast' },
+                    { word: 'jump', emoji: '🦘', hint: 'Up', definition: 'To go up in the air' },
+                    { word: 'swim', emoji: '🏊', hint: 'Water', definition: 'To move in water' }
+                ],
+                medium: [
+                    { word: 'soccer', emoji: '⚽', hint: 'Kick ball', definition: 'A sport where you kick a ball' },
+                    { word: 'basketball', emoji: '🏀', hint: 'Bounce ball', definition: 'A sport where you bounce a ball' },
+                    { word: 'tennis', emoji: '🎾', hint: 'Racket', definition: 'A sport with a racket and ball' },
+                    { word: 'baseball', emoji: '⚾', hint: 'Bat and ball', definition: 'A sport with a bat and ball' },
+                    { word: 'football', emoji: '🏈', hint: 'Throw ball', definition: 'A sport where you throw a ball' },
+                    { word: 'volleyball', emoji: '🏐', hint: 'Net', definition: 'A sport with a net and ball' },
+                    { word: 'hockey', emoji: '🏒', hint: 'Ice', definition: 'A sport played on ice' },
+                    { word: 'golf', emoji: '⛳', hint: 'Club', definition: 'A sport with a club and ball' }
+                ],
+                hard: [
+                    { word: 'gymnastics', emoji: '🤸', hint: 'Flip', definition: 'A sport with flips and tricks' },
+                    { word: 'wrestling', emoji: '🤼', hint: 'Fight', definition: 'A sport where you try to pin someone' },
+                    { word: 'badminton', emoji: '🏸', hint: 'Shuttlecock', definition: 'A sport with a racket and shuttlecock' },
+                    { word: 'skateboarding', emoji: '🛹', hint: 'Board', definition: 'A sport on a board with wheels' },
+                    { word: 'surfing', emoji: '🏄', hint: 'Waves', definition: 'A sport on waves in the ocean' },
+                    { word: 'cycling', emoji: '🚴', hint: 'Bike', definition: 'A sport on a bicycle' }
+                ]
+            },
+            toys: {
+                easy: [
+                    { word: 'doll', emoji: '🧸', hint: 'Play with', definition: 'A toy that looks like a person' },
+                    { word: 'ball', emoji: '⚽', hint: 'Bounce', definition: 'A round toy you can bounce' },
+                    { word: 'car', emoji: '🚗', hint: 'Drive', definition: 'A small toy vehicle' },
+                    { word: 'block', emoji: '🧱', hint: 'Build', definition: 'A toy you use to build things' },
+                    { word: 'puzzle', emoji: '🧩', hint: 'Pieces', definition: 'A game with pieces to fit together' }
+                ],
+                medium: [
+                    { word: 'teddy', emoji: '🧸', hint: 'Bear', definition: 'A soft toy bear' },
+                    { word: 'robot', emoji: '🤖', hint: 'Machine', definition: 'A toy that looks like a machine' },
+                    { word: 'kite', emoji: '🪁', hint: 'Flies', definition: 'A toy that flies in the wind' },
+                    { word: 'yo-yo', emoji: '🪀', hint: 'Up and down', definition: 'A toy that goes up and down on a string' },
+                    { word: 'top', emoji: '🪁', hint: 'Spins', definition: 'A toy that spins' },
+                    { word: 'marbles', emoji: '🔵', hint: 'Round', definition: 'Small round glass toys' },
+                    { word: 'drum', emoji: '🥁', hint: 'Beat', definition: 'A toy you hit to make music' },
+                    { word: 'truck', emoji: '🚚', hint: 'Vehicle', definition: 'A toy vehicle' }
+                ],
+                hard: [
+                    { word: 'bicycle', emoji: '🚲', hint: 'Two wheels', definition: 'A toy with two wheels and pedals' },
+                    { word: 'skateboard', emoji: '🛹', hint: 'Board', definition: 'A board with wheels you ride' },
+                    { word: 'trampoline', emoji: '🦘', hint: 'Jump', definition: 'A toy you jump on' },
+                    { word: 'swingset', emoji: '🪑', hint: 'Swing', definition: 'A toy you swing on' },
+                    { word: 'sandbox', emoji: '🏖️', hint: 'Sand', definition: 'A box filled with sand to play in' },
+                    { word: 'playground', emoji: '🛝', hint: 'Play area', definition: 'A place with many toys to play on' }
+                ]
+            },
+            feelings: {
+                easy: [
+                    { word: 'happy', emoji: '😊', hint: 'Smile', definition: 'Feeling good and joyful' },
+                    { word: 'sad', emoji: '😢', hint: 'Cry', definition: 'Feeling down or upset' },
+                    { word: 'mad', emoji: '😠', hint: 'Angry', definition: 'Feeling very angry' },
+                    { word: 'scared', emoji: '😨', hint: 'Afraid', definition: 'Feeling afraid or frightened' },
+                    { word: 'excited', emoji: '🤩', hint: 'Thrilled', definition: 'Feeling very happy and energetic' }
+                ],
+                medium: [
+                    { word: 'proud', emoji: '😌', hint: 'Accomplished', definition: 'Feeling good about something you did' },
+                    { word: 'surprised', emoji: '😲', hint: 'Shocked', definition: 'Feeling shocked or amazed' },
+                    { word: 'worried', emoji: '😟', hint: 'Anxious', definition: 'Feeling anxious or concerned' },
+                    { word: 'calm', emoji: '😌', hint: 'Peaceful', definition: 'Feeling peaceful and relaxed' },
+                    { word: 'brave', emoji: '😤', hint: 'Courageous', definition: 'Feeling courageous and strong' },
+                    { word: 'shy', emoji: '😳', hint: 'Timid', definition: 'Feeling timid or nervous around others' },
+                    { word: 'lonely', emoji: '😔', hint: 'Alone', definition: 'Feeling alone or isolated' },
+                    { word: 'grateful', emoji: '🙏', hint: 'Thankful', definition: 'Feeling thankful and appreciative' }
+                ],
+                hard: [
+                    { word: 'frustrated', emoji: '😤', hint: 'Annoyed', definition: 'Feeling annoyed or upset' },
+                    { word: 'embarrassed', emoji: '😳', hint: 'Awkward', definition: 'Feeling awkward or self-conscious' },
+                    { word: 'confused', emoji: '😕', hint: 'Unclear', definition: 'Feeling unclear or puzzled' },
+                    { word: 'disappointed', emoji: '😞', hint: 'Let down', definition: 'Feeling let down or sad' },
+                    { word: 'confident', emoji: '😎', hint: 'Sure', definition: 'Feeling sure of yourself' },
+                    { word: 'curious', emoji: '🤔', hint: 'Wondering', definition: 'Feeling interested and wanting to know more' }
+                ]
+            }
+        };
+
+        // Practice Tab Variables
+        let currentWord = null;
+        let score = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let isAnswered = false;
+        let hintsUsed = 0;
+        let revealedLetters = [];
+
+        // Learning Tab Variables
+        let learningWord = null;
+        let usedTiles = [];
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            if (tabName === 'practice') {
+                document.getElementById('practiceTab').classList.add('active');
+                document.querySelectorAll('.tab')[0].classList.add('active');
+            } else {
+                document.getElementById('learningTab').classList.add('active');
+                document.querySelectorAll('.tab')[1].classList.add('active');
+            }
+        }
+
+        function getWordsByCategoryAndDifficulty(category, difficulty) {
+            return wordDatabase[category]?.[difficulty] || [];
+        }
+
+        function generateNewWord() {
+            const category = document.getElementById('category').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const words = getWordsByCategoryAndDifficulty(category, difficulty);
+            
+            if (words.length === 0) {
+                alert('No words available for this category and difficulty.');
+                return;
+            }
+
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            hintsUsed = 0;
+            revealedLetters = [];
+            isAnswered = false; // Reset the answered flag
+
+            // Update display
+            document.getElementById('wordImage').textContent = currentWord.emoji;
+            document.getElementById('wordHint').textContent = `Hint: ${currentWord.hint}`;
+            document.getElementById('wordDefinition').textContent = currentWord.definition;
+
+            // Reset input
+            const input = document.getElementById('spellingInput');
+            input.value = '';
+            input.disabled = false;
+            input.classList.remove('correct', 'incorrect');
+            input.focus();
+
+            // Reset feedback
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('correctAnswer').textContent = '';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('hintBtn').disabled = false;
+
+            // Create letter hint boxes
+            createLetterHints();
+        }
+
+        function createLetterHints() {
+            const container = document.getElementById('letterHint');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < currentWord.word.length; i++) {
+                const box = document.createElement('div');
+                box.className = 'letter-box';
+                box.textContent = '_';
+                box.id = `letterBox${i}`;
+                container.appendChild(box);
+            }
+        }
+
+        function showHint() {
+            if (!currentWord || hintsUsed >= currentWord.word.length) return;
+
+            // Reveal one letter at a time
+            const letterIndex = hintsUsed;
+            const letterBox = document.getElementById(`letterBox${letterIndex}`);
+            if (letterBox) {
+                letterBox.textContent = currentWord.word[letterIndex].toUpperCase();
+                letterBox.classList.add('revealed');
+                revealedLetters.push(letterIndex);
+                hintsUsed++;
+            }
+
+            // Disable hint button if all letters revealed
+            if (hintsUsed >= currentWord.word.length) {
+                document.getElementById('hintBtn').disabled = true;
+            }
+        }
+
+        function playSound() {
+            if (!currentWord) return;
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentWord.word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('Audio not supported in your browser.');
+            }
+        }
+
+        function checkSpelling() {
+            if (isAnswered || !currentWord) return;
+
+            const userInput = document.getElementById('spellingInput').value.toLowerCase().trim();
+            const input = document.getElementById('spellingInput');
+            const feedback = document.getElementById('feedback');
+            const correctAnswerDiv = document.getElementById('correctAnswer');
+            const submitBtn = document.getElementById('submitBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (!userInput) {
+                alert('Please type a word!');
+                return;
+            }
+
+            isAnswered = true;
+            input.disabled = true;
+            document.getElementById('hintBtn').disabled = true;
+
+            if (userInput === currentWord.word.toLowerCase()) {
+                input.classList.add('correct');
+                feedback.textContent = '✓ Correct! Great job! +5 points';
+                feedback.className = 'feedback correct';
+                score += 5;
+                correctCount++;
+                
+                // Show all letters
+                for (let i = 0; i < currentWord.word.length; i++) {
+                    const box = document.getElementById(`letterBox${i}`);
+                    if (box) {
+                        box.textContent = currentWord.word[i].toUpperCase();
+                        box.classList.add('correct');
+                    }
+                }
+            } else {
+                input.classList.add('incorrect');
+                feedback.textContent = '✗ Incorrect. Try again! -2 points';
+                feedback.className = 'feedback incorrect';
+                correctAnswerDiv.textContent = `Correct spelling: ${currentWord.word}`;
+                score -= 2;
+                wrongCount++;
+                if (score < 0) score = 0;
+
+                // Show correct letters in green, wrong ones stay revealed
+                for (let i = 0; i < currentWord.word.length; i++) {
+                    const box = document.getElementById(`letterBox${i}`);
+                    if (box) {
+                        box.textContent = currentWord.word[i].toUpperCase();
+                        if (userInput[i] && userInput[i] === currentWord.word[i]) {
+                            box.classList.add('correct');
+                        }
+                    }
+                }
+            }
+
+            updateScoreDisplay();
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'block';
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('correct').textContent = correctCount;
+            document.getElementById('wrong').textContent = wrongCount;
+        }
+
+        function resetGame() {
+            score = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            updateScoreDisplay();
+            generateNewWord();
+        }
+
+        // Learning Tab Functions
+        function startLearning() {
+            const category = document.getElementById('learningCategory').value;
+            const difficulty = document.getElementById('learningDifficulty').value;
+            const words = getWordsByCategoryAndDifficulty(category, difficulty);
+            
+            if (words.length === 0) {
+                alert('No words available for this category and difficulty.');
+                return;
+            }
+
+            learningWord = words[Math.floor(Math.random() * words.length)];
+            usedTiles = [];
+
+            // Update display
+            document.getElementById('learningImage').textContent = learningWord.emoji;
+            document.getElementById('learningHint').textContent = `Hint: ${learningWord.hint}`;
+            document.getElementById('learningDefinition').textContent = learningWord.definition;
+
+            // Show word breakdown
+            showWordBreakdown();
+
+            // Create word slots
+            createWordSlots();
+
+            // Create letter tiles
+            createLetterTiles();
+
+            document.getElementById('learningVisual').style.display = 'block';
+        }
+
+        function showWordBreakdown() {
+            const word = learningWord.word;
+            const container = document.getElementById('wordBreakdown');
+            
+            // Simple syllable breakdown (basic approach)
+            let html = '<div style="margin-bottom: 10px;"><strong>Word Breakdown:</strong></div>';
+            html += '<div>';
+            
+            // Break into syllables (simple heuristic)
+            const syllables = breakIntoSyllables(word);
+            syllables.forEach((syllable, index) => {
+                html += `<span class="syllable">${syllable}</span>`;
+                if (index < syllables.length - 1) {
+                    html += ' + ';
+                }
+            });
+            
+            html += ` = <strong style="color: #667eea; font-size: 1.5em;">${word}</strong>`;
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        function breakIntoSyllables(word) {
+            // Simple syllable breakdown for elementary words
+            const vowels = 'aeiou';
+            let syllables = [];
+            let currentSyllable = '';
+            
+            for (let i = 0; i < word.length; i++) {
+                currentSyllable += word[i];
+                if (vowels.includes(word[i].toLowerCase()) && i < word.length - 1) {
+                    if (!vowels.includes(word[i + 1].toLowerCase())) {
+                        syllables.push(currentSyllable);
+                        currentSyllable = '';
+                    }
+                }
+            }
+            
+            if (currentSyllable) {
+                if (syllables.length > 0) {
+                    syllables[syllables.length - 1] += currentSyllable;
+                } else {
+                    syllables.push(currentSyllable);
+                }
+            }
+            
+            return syllables.length > 0 ? syllables : [word];
+        }
+
+        function createWordSlots() {
+            const container = document.getElementById('wordSlots');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < learningWord.word.length; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'letter-slot';
+                slot.id = `slot${i}`;
+                slot.dataset.index = i;
+                container.appendChild(slot);
+            }
+        }
+
+        function createLetterTiles() {
+            const container = document.getElementById('letterTiles');
+            container.innerHTML = '';
+            
+            // Create tiles with correct letters plus some distractors
+            const word = learningWord.word;
+            const letters = word.split('').map(l => l.toUpperCase());
+            
+            // Add some random letters as distractors
+            const allLetters = [...letters];
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            const neededDistractors = Math.max(3, Math.floor(word.length * 0.5));
+            
+            for (let i = 0; i < neededDistractors; i++) {
+                const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+                if (!allLetters.includes(randomLetter)) {
+                    allLetters.push(randomLetter);
+                }
+            }
+            
+            // Shuffle letters
+            allLetters.sort(() => Math.random() - 0.5);
+            
+            allLetters.forEach((letter, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'letter-tile';
+                tile.textContent = letter;
+                tile.id = `tile${index}`;
+                tile.dataset.letter = letter;
+                tile.onclick = () => selectTile(tile);
+                container.appendChild(tile);
+            });
+        }
+
+        function selectTile(tile) {
+            if (tile.classList.contains('used')) return;
+
+            // Find first empty slot
+            const emptySlot = Array.from(document.querySelectorAll('.letter-slot'))
+                .find(slot => !slot.classList.contains('filled'));
+            
+            if (emptySlot) {
+                emptySlot.textContent = tile.dataset.letter;
+                emptySlot.classList.add('filled');
+                tile.classList.add('used');
+                usedTiles.push({ tile, slot: emptySlot });
+            }
+        }
+
+        function checkLearningWord() {
+            const slots = Array.from(document.querySelectorAll('.letter-slot'));
+            const userWord = slots.map(slot => slot.textContent || '').join('').toLowerCase();
+            
+            if (userWord.length !== learningWord.word.length) {
+                alert('Please fill all the slots!');
+                return;
+            }
+
+            if (userWord === learningWord.word.toLowerCase()) {
+                alert('✓ Correct! Great job!');
+                // Mark all as correct
+                slots.forEach(slot => {
+                    slot.style.borderColor = '#48bb78';
+                    slot.style.background = '#f0fff4';
+                });
+            } else {
+                alert('Not quite right. Try again!');
+                // Clear and reset
+                slots.forEach(slot => {
+                    slot.textContent = '';
+                    slot.classList.remove('filled');
+                });
+                usedTiles.forEach(({ tile }) => {
+                    tile.classList.remove('used');
+                });
+                usedTiles = [];
+            }
+        }
+
+        function nextLearningWord() {
+            startLearning();
+        }
+
+        function playLearningSound() {
+            if (!learningWord) return;
+            
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(learningWord.word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('spellingInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isAnswered) {
+                checkSpelling();
+            }
+        });
+
+        // Generate new word when category or difficulty changes
+        document.getElementById('category').addEventListener('change', function() {
+            if (!isAnswered) {
+                generateNewWord();
+            }
+        });
+
+        document.getElementById('difficulty').addEventListener('change', function() {
+            if (!isAnswered) {
+                generateNewWord();
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            generateNewWord();
+        });
+    </script>
+</body>
+</html>
+

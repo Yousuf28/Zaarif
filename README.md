@@ -17,3 +17,4 @@ I am in 2nd grade.
 
 [learn Multiplication](app_html/practice_multiplication.html) 
 
+[spelling](app_html/practice_spelling.html)
