@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Practice - Interactive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7f7f7;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            font-size: 1em;
+        }
+
+        select {
+            padding: 12px 15px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:hover {
+            border-color: #667eea;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .problem-container {
+            background: #f9f9f9;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .problem-display {
+            font-family: 'Courier New', monospace;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .number-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 8px 0;
+            min-height: 50px;
+        }
+
+        .top-number {
+            text-align: right;
+            font-size: 2.5em;
+            padding-right: 10px;
+            min-width: 200px;
+            white-space: pre;
+        }
+
+        .operator-line {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 8px 0;
+            border-top: 2px solid #333;
+            margin-top: 10px;
+        }
+
+        .operator {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-right: 10px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .bottom-number {
+            text-align: right;
+            font-size: 2.5em;
+            padding-right: 10px;
+            min-width: 200px;
+            white-space: pre;
+        }
+
+        .answer-line {
+            border-top: 2px solid #333;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+        .answer-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .answer-input {
+            font-family: 'Courier New', monospace;
+            font-size: 2.5em;
+            text-align: right;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            width: 200px;
+            transition: border-color 0.3s;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .answer-input.correct {
+            border-color: #48bb78;
+            background-color: #f0fff4;
+        }
+
+        .answer-input.incorrect {
+            border-color: #f56565;
+            background-color: #fff5f5;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .btn-submit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-next {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-new {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-new:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+        }
+
+        .btn-explain {
+            background: #9f7aea;
+            color: white;
+        }
+
+        .btn-explain:hover {
+            background: #805ad5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(159, 122, 234, 0.4);
+        }
+
+        .explanation-panel {
+            background: #fff9e6;
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .explanation-panel.show {
+            display: block;
+        }
+
+        .explanation-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .explanation-step {
+            margin: 15px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .explanation-step-title {
+            font-weight: bold;
+            color: #78350f;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .explanation-step-content {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .breakdown {
+            display: inline-block;
+            margin: 0 5px;
+            padding: 2px 8px;
+            background: #fef3c7;
+            border-radius: 4px;
+        }
+
+        .subtraction-visual {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            line-height: 2;
+            margin: 15px 0;
+        }
+
+        .subtraction-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 5px 0;
+            min-height: 40px;
+        }
+
+        .subtraction-number {
+            text-align: right;
+            min-width: 120px;
+            padding-right: 10px;
+        }
+
+        .subtraction-operator {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 10px;
+            min-width: 20px;
+        }
+
+        .subtraction-line {
+            border-top: 2px solid #333;
+            margin: 8px 0;
+        }
+
+        .place-highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .borrow-indicator {
+            color: #f56565;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .borrow-visual {
+            background: #fed7d7;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #f56565;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            display: block;
+        }
+
+        .correct-answer {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+
+            .container {
+                padding: 15px;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 1.4em;
+                margin-bottom: 15px;
+            }
+
+            .score-board {
+                padding: 12px 10px;
+                margin-bottom: 20px;
+            }
+
+            .score-label {
+                font-size: 0.8em;
+            }
+
+            .score-value {
+                font-size: 1.4em;
+            }
+
+            .controls {
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .control-group {
+                flex: 1;
+                min-width: 140px;
+            }
+
+            .problem-container {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+
+            .top-number, .bottom-number {
+                font-size: 2em;
+                min-width: 150px;
+                padding-right: 5px;
+            }
+
+            .operator {
+                font-size: 2em;
+                margin-right: 5px;
+            }
+
+            .answer-input {
+                font-size: 1.8em;
+                width: 100%;
+                max-width: 180px;
+                padding: 8px 12px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+
+            .explanation-panel {
+                padding: 15px;
+            }
+
+            .explanation-title {
+                font-size: 1.1em;
+            }
+
+            .explanation-step {
+                padding: 10px;
+            }
+
+            .explanation-step-content {
+                font-size: 1em;
+            }
+
+            .subtraction-visual {
+                font-size: 1.1em;
+            }
+
+            .subtraction-number {
+                min-width: 100px;
+                font-size: 0.9em;
+            }
+
+            .step-number {
+                width: 25px;
+                height: 25px;
+                line-height: 25px;
+                font-size: 0.9em;
+            }
+
+            .borrow-visual {
+                padding: 6px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .top-number, .bottom-number {
+                font-size: 1.6em;
+                min-width: 120px;
+            }
+
+            .operator {
+                font-size: 1.6em;
+            }
+
+            .answer-input {
+                font-size: 1.5em;
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Math Practice</h1>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Correct</div>
+                <div class="score-value" id="correct">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Wrong</div>
+                <div class="score-value" id="wrong">0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="digits">Number of Digits:</label>
+                <select id="digits">
+                    <option value="1">1 Digit</option>
+                    <option value="2" selected>2 Digits</option>
+                    <option value="3">3 Digits</option>
+                    <option value="4">4 Digits</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="operation">Operation:</label>
+                <select id="operation">
+                    <option value="add">Addition (+)</option>
+                    <option value="subtract">Subtraction (-)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="problem-container">
+            <div class="problem-display">
+                <div class="number-row">
+                    <div class="top-number" id="topNumber">0</div>
+                </div>
+                <div class="operator-line">
+                    <span class="operator" id="operator">+</span>
+                    <div class="bottom-number" id="bottomNumber">0</div>
+                </div>
+                <div class="answer-line">
+                    <div class="answer-input-container">
+                        <input type="number" 
+                               class="answer-input" 
+                               id="answerInput" 
+                               placeholder="?"
+                               autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <div class="correct-answer" id="correctAnswer"></div>
+            <div class="explanation-panel" id="explanationPanel">
+                <div class="explanation-title">Step-by-Step Explanation</div>
+                <div id="explanationContent"></div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-submit" id="submitBtn" onclick="checkAnswer()">Submit</button>
+            <button class="btn-explain" id="explainBtn" onclick="showExplanation()">Explain</button>
+            <button class="btn-next" id="nextBtn" onclick="generateNewProblem()" style="display: none;">Next Problem</button>
+            <button class="btn-new" onclick="resetGame()">New Game</button>
+        </div>
+    </div>
+
+    <script>
+        let currentProblem = {
+            topNumber: 0,
+            bottomNumber: 0,
+            operation: 'add',
+            correctAnswer: 0
+        };
+
+        let score = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let isAnswered = false;
+
+        function getRandomNumber(digits) {
+            // First digit should never be 0, so range is different
+            const min = Math.pow(10, digits - 1); // e.g., for 2 digits: 10, for 3 digits: 100
+            const max = Math.pow(10, digits) - 1; // e.g., for 2 digits: 99, for 3 digits: 999
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateNewProblem() {
+            const digits = parseInt(document.getElementById('digits').value);
+            const operation = document.getElementById('operation').value;
+            
+            let topNum, bottomNum;
+            
+            // Generate numbers ensuring top number is always bigger
+            do {
+                topNum = getRandomNumber(digits);
+                bottomNum = getRandomNumber(digits);
+            } while (topNum <= bottomNum);
+            
+            const operationSymbol = operation === 'add' ? '+' : '−';
+            const correctAnswer = operation === 'add' ? topNum + bottomNum : topNum - bottomNum;
+            
+            currentProblem = {
+                topNumber: topNum,
+                bottomNumber: bottomNum,
+                operation: operation,
+                correctAnswer: correctAnswer
+            };
+            
+            // Update display - format numbers with proper alignment
+            // Store digits in currentProblem for later use
+            currentProblem.digits = digits;
+            
+            // Format numbers to ensure proper alignment (right-aligned with consistent width)
+            // Calculate max width needed (digits + some padding)
+            const maxWidth = digits + 2;
+            const topNumStr = topNum.toString().padStart(maxWidth, ' ');
+            const bottomNumStr = bottomNum.toString().padStart(maxWidth, ' ');
+            
+            // Use pre-formatted strings for alignment (monospace font preserves spacing)
+            document.getElementById('topNumber').textContent = topNumStr;
+            document.getElementById('bottomNumber').textContent = bottomNumStr;
+            document.getElementById('operator').textContent = operationSymbol;
+            
+            // Reset UI
+            const answerInput = document.getElementById('answerInput');
+            answerInput.value = '';
+            answerInput.disabled = false;
+            answerInput.classList.remove('correct', 'incorrect');
+            answerInput.focus();
+            
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('correctAnswer').textContent = '';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('explanationPanel').classList.remove('show');
+            
+            isAnswered = false;
+        }
+
+        function checkAnswer() {
+            if (isAnswered) return;
+            
+            const userAnswer = parseInt(document.getElementById('answerInput').value);
+            const answerInput = document.getElementById('answerInput');
+            const feedback = document.getElementById('feedback');
+            const correctAnswerDiv = document.getElementById('correctAnswer');
+            const submitBtn = document.getElementById('submitBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (isNaN(userAnswer)) {
+                alert('Please enter a number!');
+                return;
+            }
+            
+            isAnswered = true;
+            answerInput.disabled = true;
+            
+            if (userAnswer === currentProblem.correctAnswer) {
+                // Correct answer
+                answerInput.classList.add('correct');
+                feedback.textContent = '✓ Correct! +5 points';
+                feedback.className = 'feedback correct';
+                score += 5;
+                correctCount++;
+            } else {
+                // Wrong answer
+                answerInput.classList.add('incorrect');
+                feedback.textContent = '✗ Wrong! -2 points';
+                feedback.className = 'feedback incorrect';
+                correctAnswerDiv.textContent = `Correct answer: ${currentProblem.correctAnswer.toLocaleString()}`;
+                score -= 2;
+                wrongCount++;
+                // Ensure score doesn't go below 0
+                if (score < 0) score = 0;
+            }
+            
+            // Update score display
+            updateScoreDisplay();
+            
+            // Show next button
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'block';
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('correct').textContent = correctCount;
+            document.getElementById('wrong').textContent = wrongCount;
+        }
+
+        function resetGame() {
+            score = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            updateScoreDisplay();
+            generateNewProblem();
+        }
+
+        function breakDownByPlaceValue(num, digits) {
+            const parts = [];
+            let remaining = num;
+            
+            for (let i = digits - 1; i >= 0; i--) {
+                const placeValue = Math.pow(10, i);
+                const digit = Math.floor(remaining / placeValue);
+                if (digit > 0) {
+                    parts.push({
+                        value: digit * placeValue,
+                        place: i,
+                        digit: digit
+                    });
+                }
+                remaining = remaining % placeValue;
+            }
+            
+            return parts;
+        }
+
+        function showExplanation() {
+            const panel = document.getElementById('explanationPanel');
+            const content = document.getElementById('explanationContent');
+            const numDigits = currentProblem.digits || parseInt(document.getElementById('digits').value);
+            const operation = currentProblem.operation;
+            const topNum = currentProblem.topNumber;
+            const bottomNum = currentProblem.bottomNumber;
+            
+            if (operation === 'add') {
+                // Break down both numbers
+                const topParts = breakDownByPlaceValue(topNum, numDigits);
+                const bottomParts = breakDownByPlaceValue(bottomNum, numDigits);
+                
+                let html = '';
+                
+                // Step 1: Break down first number
+                html += '<div class="explanation-step">';
+                html += '<div class="explanation-step-title">Step 1: Break down the first number</div>';
+                html += '<div class="explanation-step-content">';
+                html += `${topNum} = `;
+                html += topParts.map(p => `<span class="breakdown">${p.value}</span>`).join(' + ');
+                html += '</div></div>';
+                
+                // Step 2: Break down second number
+                html += '<div class="explanation-step">';
+                html += '<div class="explanation-step-title">Step 2: Break down the second number</div>';
+                html += '<div class="explanation-step-content">';
+                html += `${bottomNum} = `;
+                html += bottomParts.map(p => `<span class="breakdown">${p.value}</span>`).join(' + ');
+                html += '</div></div>';
+                
+                // Step 3: Add place values together
+                html += '<div class="explanation-step">';
+                html += '<div class="explanation-step-title">Step 3: Add each place value separately</div>';
+                html += '<div class="explanation-step-content">';
+                
+                // Group by place value
+                const placeGroups = {};
+                [...topParts, ...bottomParts].forEach(part => {
+                    if (!placeGroups[part.place]) {
+                        placeGroups[part.place] = [];
+                    }
+                    placeGroups[part.place].push(part.value);
+                });
+                
+                const placeNames = ['ones', 'tens', 'hundreds', 'thousands'];
+                const calculations = [];
+                Object.keys(placeGroups).sort((a, b) => b - a).forEach(place => {
+                    const values = placeGroups[place];
+                    const sum = values.reduce((a, b) => a + b, 0);
+                    const placeName = placeNames[parseInt(place)] || `place ${place}`;
+                    calculations.push({ sum, values, placeName });
+                    html += `${values.join(' + ')} = <strong>${sum}</strong> (${placeName})<br>`;
+                });
+                
+                html += '</div></div>';
+                
+                // Step 4: Add all results
+                html += '<div class="explanation-step">';
+                html += '<div class="explanation-step-title">Step 4: Add all the results together</div>';
+                html += '<div class="explanation-step-content">';
+                const allSums = calculations.map(c => c.sum);
+                html += `${allSums.join(' + ')} = <strong>${currentProblem.correctAnswer}</strong>`;
+                html += '</div></div>';
+                
+                // Final answer
+                html += '<div class="explanation-step" style="background: #d1fae5; border-left-color: #48bb78;">';
+                html += '<div class="explanation-step-title">Final Answer</div>';
+                html += `<div class="explanation-step-content" style="font-size: 1.4em; text-align: center; font-weight: bold; color: #22543d;">${topNum} + ${bottomNum} = ${currentProblem.correctAnswer}</div>`;
+                html += '</div>';
+                
+                content.innerHTML = html;
+            } else {
+                // Subtraction explanation with detailed visualization
+                let html = '';
+                
+                // Step 1: Show the problem
+                html += '<div class="explanation-step">';
+                html += '<div class="explanation-step-title"><span class="step-number">1</span>Set up the problem</div>';
+                html += '<div class="explanation-step-content">';
+                html += '<div class="subtraction-visual">';
+                html += `<div class="subtraction-row"><div class="subtraction-number">${topNum}</div></div>`;
+                html += `<div class="subtraction-row"><div class="subtraction-operator">-</div><div class="subtraction-number">${bottomNum}</div></div>`;
+                html += '<div class="subtraction-line"></div>';
+                html += '</div></div></div>';
+                
+                // Step 2: Break down by place values
+                html += '<div class="explanation-step">';
+                html += '<div class="explanation-step-title"><span class="step-number">2</span>Break down by place values</div>';
+                html += '<div class="explanation-step-content">';
+                const topParts = breakDownByPlaceValue(topNum, numDigits);
+                const bottomParts = breakDownByPlaceValue(bottomNum, numDigits);
+                html += `${topNum} = `;
+                html += topParts.map(p => `<span class="breakdown">${p.value}</span>`).join(' + ');
+                html += '<br><br>';
+                html += `${bottomNum} = `;
+                html += bottomParts.map(p => `<span class="breakdown">${p.value}</span>`).join(' + ');
+                html += '</div></div>';
+                
+                // Step 3: Perform subtraction with borrowing visualization
+                html += '<div class="explanation-step">';
+                html += '<div class="explanation-step-title"><span class="step-number">3</span>Subtract from right to left (ones → tens → hundreds → thousands)</div>';
+                html += '<div class="explanation-step-content">';
+                
+                // Convert numbers to arrays of digits (working copy for visualization)
+                let topDigits = topNum.toString().split('').map(Number);
+                let bottomDigits = bottomNum.toString().split('').map(Number);
+                // Pad bottom digits to match top
+                while (bottomDigits.length < topDigits.length) {
+                    bottomDigits.unshift(0);
+                }
+                
+                const placeNames = ['ones', 'tens', 'hundreds', 'thousands'];
+                const results = [];
+                const steps = [];
+                
+                // Process from right to left
+                for (let i = topDigits.length - 1; i >= 0; i--) {
+                    // Save original digit BEFORE any modifications
+                    const originalTopDigit = topDigits[i];
+                    let topDigit = topDigits[i];
+                    const bottomDigit = bottomDigits[i];
+                    const placeIndex = topDigits.length - 1 - i;
+                    const placeName = placeNames[placeIndex] || `place ${placeIndex}`;
+                    let stepHtml = '';
+                    let borrowed = false;
+                    
+                    // Check if we need to borrow
+                    if (topDigit < bottomDigit) {
+                        borrowed = true;
+                        // Find the next non-zero digit to borrow from
+                        let borrowFromIndex = -1;
+                        for (let j = i - 1; j >= 0; j--) {
+                            if (topDigits[j] > 0) {
+                                borrowFromIndex = j;
+                                break;
+                            }
+                        }
+                        
+                        if (borrowFromIndex >= 0) {
+                            const borrowFromPlace = placeNames[topDigits.length - 1 - borrowFromIndex] || 'higher';
+                            const borrowFromValue = topDigits[borrowFromIndex];
+                            stepHtml += '<div class="borrow-visual">';
+                            stepHtml += `<strong>⚠️ Borrowing needed at ${placeName} place!</strong><br>`;
+                            stepHtml += `Cannot subtract ${bottomDigit} from ${originalTopDigit}.<br>`;
+                            stepHtml += `Borrow 1 from the ${borrowFromPlace} place (${borrowFromValue}).<br>`;
+                            
+                            // Perform the borrow
+                            topDigits[borrowFromIndex]--;
+                            topDigit += 10;
+                            
+                            // Handle intermediate zeros (they become 9s)
+                            for (let k = borrowFromIndex + 1; k < i; k++) {
+                                if (topDigits[k] === 0) {
+                                    topDigits[k] = 9;
+                                    stepHtml += `The ${placeNames[topDigits.length - 1 - k]} place becomes 9.<br>`;
+                                }
+                            }
+                            
+                            stepHtml += `Now the ${placeName} place has: ${topDigit} - ${bottomDigit} = ${topDigit - bottomDigit}`;
+                            stepHtml += '</div>';
+                        }
+                    }
+                    
+                    const result = topDigit - bottomDigit;
+                    results.unshift(result);
+                    
+                    stepHtml += `<div style="margin: 8px 0; padding: 10px; background: ${borrowed ? '#fff5f5' : '#f7f7f7'}; border-radius: 4px; border-left: 3px solid ${borrowed ? '#f56565' : '#667eea'};">`;
+                    stepHtml += `<span class="place-highlight">${placeName.charAt(0).toUpperCase() + placeName.slice(1)} place:</span> `;
+                    if (borrowed) {
+                        stepHtml += `${originalTopDigit} → ${topDigit} - ${bottomDigit} = <strong style="font-size: 1.2em; color: #22543d;">${result}</strong>`;
+                        stepHtml += ` <span class="borrow-indicator">(after borrowing)</span>`;
+                    } else {
+                        stepHtml += `${topDigit} - ${bottomDigit} = <strong style="font-size: 1.2em; color: #22543d;">${result}</strong>`;
+                    }
+                    stepHtml += '</div>';
+                    
+                    steps.push(stepHtml);
+                }
+                
+                // Display steps in order
+                steps.forEach(step => {
+                    html += step;
+                });
+                
+                html += '</div></div>';
+                
+                // Step 4: Show the result
+                html += '<div class="explanation-step">';
+                html += '<div class="explanation-step-title"><span class="step-number">4</span>Write the final answer</div>';
+                html += '<div class="explanation-step-content">';
+                html += '<div class="subtraction-visual" style="background: #f0fff4; padding: 15px; border-radius: 8px; border: 2px solid #48bb78;">';
+                html += `<div class="subtraction-row"><div class="subtraction-number">${topNum}</div></div>`;
+                html += `<div class="subtraction-row"><div class="subtraction-operator">-</div><div class="subtraction-number">${bottomNum}</div></div>`;
+                html += '<div class="subtraction-line"></div>';
+                html += `<div class="subtraction-row"><div class="subtraction-number"><strong style="font-size: 1.3em; color: #22543d;">${currentProblem.correctAnswer}</strong></div></div>`;
+                html += '</div>';
+                html += '<br>';
+                html += `<div style="text-align: center; padding: 10px; background: #e6fffa; border-radius: 6px; margin-top: 10px;">`;
+                html += `<strong>Answer digits (left to right):</strong> ${results.join(', ')}<br>`;
+                html += `<strong>Final answer:</strong> ${currentProblem.correctAnswer}`;
+                html += '</div>';
+                html += '</div></div>';
+                
+                // Final answer
+                html += '<div class="explanation-step" style="background: #d1fae5; border-left-color: #48bb78;">';
+                html += '<div class="explanation-step-title">Final Answer</div>';
+                html += `<div class="explanation-step-content" style="font-size: 1.4em; text-align: center; font-weight: bold; color: #22543d;">${topNum} - ${bottomNum} = ${currentProblem.correctAnswer}</div>`;
+                html += '</div>';
+                
+                content.innerHTML = html;
+            }
+            
+            panel.classList.add('show');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isAnswered) {
+                checkAnswer();
+            }
+        });
+
+        // Generate new problem when digits or operation changes
+        document.getElementById('digits').addEventListener('change', function() {
+            if (!isAnswered) {
+                generateNewProblem();
+            }
+        });
+
+        document.getElementById('operation').addEventListener('change', function() {
+            if (!isAnswered) {
+                generateNewProblem();
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            generateNewProblem();
+        });
+    </script>
+</body>
+</html>
+
