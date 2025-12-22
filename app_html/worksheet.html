@@ -27,6 +27,28 @@
             padding: 20px;
         }
 
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
         h1 {
             text-align: center;
             color: #333;
@@ -204,6 +226,15 @@
                 padding: 5px;
             }
 
+            .home-button {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 15px;
+                display: block;
+                text-align: center;
+            }
+
             .container {
                 padding: 15px;
                 border-radius: 10px;
@@ -334,6 +365,7 @@
     </style>
 </head>
 <body>
+    <a href="../README.md" class="home-button">🏠 Home</a>
     <div class="container">
         <h1>Math Practice Worksheet Generator</h1>
         

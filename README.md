@@ -9,12 +9,12 @@ I am in 2nd grade.
 
 [My Books Collection](books_collection.md)
 
-[addition challenge](https://yousuf28.github.io/addition_challenge/)
+[Addition Challenge](https://yousuf28.github.io/addition_challenge/)
 
-[make worksheet](app_html/worksheet.html)  
+[Make Math Worksheet](app_html/worksheet.html)  
 
 [Practice Math](app_html/practice.html)  
 
-[learn Multiplication](app_html/practice_multiplication.html) 
+[Learn Multiplication](app_html/practice_multiplication.html) 
 
-[spelling](app_html/practice_spelling.html)
+[Fun Spelling](app_html/practice_spelling.html)
