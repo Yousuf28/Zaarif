@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -350,13 +351,17 @@
                 background: white;
                 padding: 0;
             }
+
             .container {
                 box-shadow: none;
                 padding: 0;
             }
-            .controls, .button-group {
+
+            .controls,
+            .button-group {
                 display: none;
             }
+
             #worksheet {
                 border: none;
                 padding: 20px;
@@ -364,11 +369,12 @@
         }
     </style>
 </head>
+
 <body>
     <a href="../README.md" class="home-button">🏠 Home</a>
     <div class="container">
         <h1>Math Practice Worksheet Generator</h1>
-        
+
         <div class="controls">
             <div class="control-group">
                 <label for="digits">Number of Digits:</label>
@@ -379,12 +385,13 @@
                     <option value="4">4 Digits</option>
                 </select>
             </div>
-            
+
             <div class="control-group">
                 <label for="operation">Operation:</label>
                 <select id="operation">
                     <option value="add">Addition (+)</option>
                     <option value="subtract">Subtraction (-)</option>
+                    <option value="multiply">Multiplication (&times;)</option>
                 </select>
             </div>
         </div>
@@ -412,32 +419,41 @@
             const digits = parseInt(document.getElementById('digits').value);
             const operation = document.getElementById('operation').value;
             const worksheet = document.getElementById('worksheet');
-            
-            const operationSymbol = operation === 'add' ? '+' : '−';
-            const operationName = operation === 'add' ? 'Addition' : 'Subtraction';
-            
+
+            let operationSymbol, operationName;
+            if (operation === 'add') {
+                operationSymbol = '+';
+                operationName = 'Addition';
+            } else if (operation === 'subtract') {
+                operationSymbol = '&minus;';
+                operationName = 'Subtraction';
+            } else {
+                operationSymbol = '&times;';
+                operationName = 'Multiplication';
+            }
+
             let html = `
                 <div class="worksheet-title">Math Practice Worksheet</div>
                 <div class="worksheet-info">${operationName} - ${digits} Digit Numbers</div>
                 <div class="worksheet-grid">
             `;
-            
+
             for (let i = 0; i < 16; i++) {
                 let num1 = getRandomNumber(digits);
                 let num2 = getRandomNumber(digits);
-                
+
                 // Ensure first number is always bigger than second number
                 // Also ensure num1 > num2 (not equal) for better practice
                 while (num1 <= num2) {
                     num1 = getRandomNumber(digits);
                     num2 = getRandomNumber(digits);
                 }
-                
+
                 // Format numbers with proper spacing
                 const num1Str = num1.toString().padStart(digits + 2, ' ');
                 const num2Str = num2.toString().padStart(digits + 2, ' ');
                 const lineLength = digits + 2;
-                
+
                 html += `
                     <div class="problem">
                         <div class="problem-row">${num1Str}</div>
@@ -448,11 +464,11 @@
                     </div>
                 `;
             }
-            
+
             html += '</div>';
             worksheet.innerHTML = html;
             worksheet.style.display = 'block';
-            
+
             // Enable copy and download buttons
             document.getElementById('copyBtn').disabled = false;
             document.getElementById('downloadBtn').disabled = false;
@@ -460,7 +476,7 @@
 
         function copyWorksheet() {
             const worksheet = document.getElementById('worksheet');
-            
+
             // Create a temporary canvas to convert to image
             html2canvas(worksheet, {
                 backgroundColor: '#ffffff',
@@ -488,7 +504,7 @@
 
         function downloadPNG() {
             const worksheet = document.getElementById('worksheet');
-            
+
             html2canvas(worksheet, {
                 backgroundColor: '#ffffff',
                 scale: 2,
@@ -507,4 +523,5 @@
         });
     </script>
 </body>
+
 </html>
